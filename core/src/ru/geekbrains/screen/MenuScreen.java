@@ -9,12 +9,15 @@ import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprites.Background;
+import ru.geekbrains.sprites.Flyer;
 
 public class MenuScreen extends BaseScreen {
 
     private Texture bg;
+    private Texture fl;
     private Background background;
-    private Vector2 pos;
+    private Flyer flyer;
+
 
     @Override
     public void show() {
@@ -26,7 +29,14 @@ public class MenuScreen extends BaseScreen {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        pos = new Vector2();
+        fl = new Texture("textures/fighter.png");
+        try {
+            flyer = new Flyer(fl);
+        } catch (GameException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -39,28 +49,32 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         batch.dispose();
         bg.dispose();
+        fl.dispose();
         super.dispose();
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        background.resize(worldBounds);
+       background.resize(worldBounds);
+       flyer.resize(worldBounds);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        pos.set(touch);
+        flyer.touchDown(touch, pointer, button);
         return false;
     }
 
     private void update(float delta) {
+        flyer.update(delta);
     }
 
     private void draw() {
-        Gdx.gl.glClearColor(0.5f, 0.7f, 0.8f, 1);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
+        flyer.draw(batch);
         batch.end();
     }
 
