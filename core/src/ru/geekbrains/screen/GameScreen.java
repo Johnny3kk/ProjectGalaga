@@ -10,6 +10,7 @@ import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprites.Background;
+import ru.geekbrains.sprites.Player;
 import ru.geekbrains.sprites.Star;
 
 public class GameScreen extends BaseScreen {
@@ -22,6 +23,7 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas atlas;
 
     private Star[] stars;
+    private Player player;
 
     @Override
     public void show() {
@@ -45,6 +47,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        player.resize(worldBounds);
     }
 
     @Override
@@ -56,22 +59,26 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        return super.keyDown(keycode);
+        player.keyDown(keycode);
+        return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return super.keyUp(keycode);
+        player.keyUp(keycode);
+        return false;
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        return super.touchDown(touch, pointer, button);
+        player.touchDown(touch, pointer, button);
+        return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        return super.touchUp(touch, pointer, button);
+        player.touchUp(touch, pointer, button);
+        return false;
     }
 
     private void initSprites() {
@@ -81,6 +88,7 @@ public class GameScreen extends BaseScreen {
             for (int i = 0; i < STAR_COUNT; i++) {
                 stars[i] =  new Star(atlas);
             }
+            player = new Player(atlas);
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
@@ -90,6 +98,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        player.update(delta);
     }
 
     private void draw() {
@@ -100,6 +109,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
+        player.draw(batch);
         batch.end();
     }
 }
