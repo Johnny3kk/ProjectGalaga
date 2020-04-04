@@ -1,18 +1,24 @@
 package ru.geekbrains.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
+import ru.geekbrains.math.Rnd;
 import ru.geekbrains.pool.BulletPool;
+import ru.geekbrains.pool.EnemyPool;
 import ru.geekbrains.sprites.Background;
+import ru.geekbrains.sprites.Enemy;
 import ru.geekbrains.sprites.MainShip;
 import ru.geekbrains.sprites.Star;
+import ru.geekbrains.utils.Regions;
 
 public class GameScreen extends BaseScreen {
 
@@ -29,12 +35,24 @@ public class GameScreen extends BaseScreen {
 
     private MainShip mainShip;
 
+    private EnemyPool enemyPool;
+    private TextureRegion[] enemyTexture;
+    private Rect worldBounds;
+    private Vector2 posEnemy = new Vector2();
+    private float enemyTrigger = 42;
+
+    private Sound backSound;
+
     @Override
     public void show() {
         super.show();
         bg = new Texture("textures/bg.png");
         atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         bulletPool = new BulletPool();
+        backSound = Gdx.audio.newSound(Gdx.files.internal("sounds/game_screen.mp3"));
+        backSound.loop(50);
+        enemyPool = new EnemyPool();
+        enemyTexture = Regions.split(atlas.findRegion("enemy1"), 1, 2, 2);
         initSprites();
     }
 
@@ -49,6 +67,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
+        this.worldBounds = worldBounds;
         background.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
@@ -61,6 +80,8 @@ public class GameScreen extends BaseScreen {
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
+        backSound.dispose();
+        enemyPool.dispose();
         super.dispose();
     }
 
@@ -105,12 +126,18 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        if (enemyTrigger >= 4f){
+            startEnemy();
+            enemyTrigger = 0;
+        } else enemyTrigger += delta;
         mainShip.update(delta);
         bulletPool.updateActiveSprites(delta);
-    }
+        enemyPool.updateActiveSprites(delta);
+   }
 
     public void freeAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
+        enemyPool.freeAllDestroyedActiveObjects();
     }
 
     private void draw() {
@@ -123,6 +150,12 @@ public class GameScreen extends BaseScreen {
         }
         mainShip.draw(batch);
         bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
         batch.end();
+    }
+
+    private void startEnemy() {
+        Enemy enemy = enemyPool.obtain();
+        enemy.set(enemyTexture[0], posEnemy.set(Rnd.nextFloat(-0.3f, 0.3f), 0.45f), 0.1f, worldBounds);
     }
 }
