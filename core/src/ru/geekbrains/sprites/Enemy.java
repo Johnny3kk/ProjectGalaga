@@ -11,21 +11,20 @@ public class Enemy extends Sprite {
 
     private Rect worldBounds;
     private Vector2 v;
-    private Vector2 pos0;
 
     public Enemy() {
         regions = new TextureRegion[1];
-        v = new Vector2(0, -0.001f);
-        pos.set(Rnd.nextFloat(-0.4f, 0.4f), 0.5f);
-
+        v = new Vector2(0, -0.0025f);
     }
 
     public void set(
             TextureRegion region,
+            Vector2 pos0,
             float height,
             Rect worldBounds
     ) {
         this.regions[0] = region;
+        this.pos.set(pos0);
         setHeightProportion(height);
         this.worldBounds = worldBounds;
     }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
+import ru.geekbrains.math.Rnd;
 import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.pool.EnemyPool;
 import ru.geekbrains.sprites.Background;
@@ -37,6 +38,8 @@ public class GameScreen extends BaseScreen {
     private EnemyPool enemyPool;
     private TextureRegion[] enemyTexture;
     private Rect worldBounds;
+    private Vector2 posEnemy = new Vector2();
+    private float enemyTrigger = 42;
 
     private Sound backSound;
 
@@ -64,6 +67,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
+        this.worldBounds = worldBounds;
         background.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
@@ -113,7 +117,6 @@ public class GameScreen extends BaseScreen {
                 stars[i] =  new Star(atlas);
             }
             mainShip = new MainShip(atlas, bulletPool);
-           // startEnemy();
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
@@ -123,6 +126,10 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        if (enemyTrigger >= 4f){
+            startEnemy();
+            enemyTrigger = 0;
+        } else enemyTrigger += delta;
         mainShip.update(delta);
         bulletPool.updateActiveSprites(delta);
         enemyPool.updateActiveSprites(delta);
@@ -130,6 +137,7 @@ public class GameScreen extends BaseScreen {
 
     public void freeAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
+        enemyPool.freeAllDestroyedActiveObjects();
     }
 
     private void draw() {
@@ -145,9 +153,9 @@ public class GameScreen extends BaseScreen {
         enemyPool.drawActiveSprites(batch);
         batch.end();
     }
-//// нужно корректно передать текстуру врага
-//    private void startEnemy() {
-//        Enemy enemy = enemyPool.obtain();
-//        enemy.set(enemyTexture, 0.05f, worldBounds);
-//    }
+
+    private void startEnemy() {
+        Enemy enemy = enemyPool.obtain();
+        enemy.set(enemyTexture[0], posEnemy.set(Rnd.nextFloat(-0.3f, 0.3f), 0.45f), 0.1f, worldBounds);
+    }
 }
