@@ -58,12 +58,6 @@ public class Rect {
         return halfHeight * 2f;
     }
 
-    public void set(TextureRegion[] enemyTexture, float height, Rect from) {
-        pos.set(from.pos);
-        halfWidth = from.halfWidth;
-        halfHeight = from.halfHeight;
-    }
-
     public void setLeft(float left) {
         pos.x = left + halfWidth;
     }
