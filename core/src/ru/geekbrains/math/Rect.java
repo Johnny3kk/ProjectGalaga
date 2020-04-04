@@ -1,5 +1,6 @@
 package ru.geekbrains.math;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -57,7 +58,7 @@ public class Rect {
         return halfHeight * 2f;
     }
 
-    public void set(Rect from) {
+    public void set(TextureRegion[] enemyTexture, float height, Rect from) {
         pos.set(from.pos);
         halfWidth = from.halfWidth;
         halfHeight = from.halfHeight;
