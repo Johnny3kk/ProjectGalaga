@@ -1,6 +1,5 @@
 package ru.geekbrains.math;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -56,6 +55,12 @@ public class Rect {
 
     public float getHeight() {
         return halfHeight * 2f;
+    }
+
+    public void set(Rect from) {
+        pos.set(from.pos);
+        halfWidth = from.halfWidth;
+        halfHeight = from.halfHeight;
     }
 
     public void setLeft(float left) {
