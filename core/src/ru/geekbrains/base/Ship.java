@@ -24,7 +24,7 @@ public abstract class Ship extends Sprite {
     protected Vector2 v;
 
     protected float reloadInterval;
-    protected float reloadTimer;
+    protected float reloadTimer = 199f;
 
     public Ship() {
     }
