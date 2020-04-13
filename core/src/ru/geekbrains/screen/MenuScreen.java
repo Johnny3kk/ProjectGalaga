@@ -19,7 +19,7 @@ public class MenuScreen extends BaseScreen {
 
     private static final int STAR_COUNT = 256;
 
-    private final Game game;
+    public static Game game;
 
     private Texture bg;
     private Background background;

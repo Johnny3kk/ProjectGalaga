@@ -1,5 +1,6 @@
 package ru.geekbrains.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
 
+import ru.geekbrains.ProjectGalaga;
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
@@ -27,7 +29,7 @@ import ru.geekbrains.utils.EnemyEmitter;
 
 public class GameScreen extends BaseScreen {
 
-    private enum State {PLAYING, PAUSE, GAME_OVER}
+    public enum State {PLAYING, PAUSE, GAME_OVER}
 
     private static final int STAR_COUNT = 64;
 
@@ -51,11 +53,12 @@ public class GameScreen extends BaseScreen {
     private Sound laserSound;
     private Sound bulletSound;
     private Sound explosion;
-    private State state;
+    public State state;
 
     @Override
     public void show() {
         super.show();
+        state = State.PLAYING;
         bg = new Texture("textures/bg.png");
         atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
@@ -69,7 +72,6 @@ public class GameScreen extends BaseScreen {
         music.setLooping(true);
         music.play();
         initSprites();
-        state = State.PLAYING;
     }
 
     @Override
@@ -95,6 +97,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void dispose() {
+        batch.dispose();
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
@@ -127,6 +130,7 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             mainShip.touchDown(touch, pointer, button);
         }
+        newGame.touchDown(touch, pointer, button);
         return false;
     }
 
@@ -135,10 +139,11 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             mainShip.touchUp(touch, pointer, button);
         }
+        newGame.touchDown(touch, pointer, button);
         return false;
     }
 
-    private void initSprites() {
+    public void initSprites() {
         try {
             background = new Background(bg);
             stars = new Star[STAR_COUNT];
@@ -147,7 +152,7 @@ public class GameScreen extends BaseScreen {
             }
             mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
             gameOver = new GameOver(atlas);
-            newGame = new NewGame(atlas);
+            newGame = new NewGame(atlas, this);
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
