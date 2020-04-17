@@ -2,6 +2,7 @@ package ru.geekbrains.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,11 +14,14 @@ import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprites.Background;
 import ru.geekbrains.sprites.ButtonExit;
 import ru.geekbrains.sprites.ButtonPlay;
+import ru.geekbrains.sprites.Logo;
+import ru.geekbrains.sprites.NovaStar;
 import ru.geekbrains.sprites.Star;
 
 public class MenuScreen extends BaseScreen {
 
     private static final int STAR_COUNT = 256;
+    private static final int NOVA_COUNT = 13;
 
     private final Game game;
 
@@ -30,6 +34,12 @@ public class MenuScreen extends BaseScreen {
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
 
+    private Texture lg;
+    private Logo logo;
+    private Music music;
+    private NovaStar[] novaStars;
+    private Texture ns;
+
     public MenuScreen(Game game) {
         this.game = game;
     }
@@ -39,6 +49,11 @@ public class MenuScreen extends BaseScreen {
         super.show();
         bg = new Texture("textures/bg.png");
         atlas = new TextureAtlas(Gdx.files.internal("textures/menuAtlas.tpack"));
+        lg = new Texture("textures/StartLogo.png");
+        ns = new Texture("textures/novaStar.png");
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/Start.mp3"));
+        music.setLooping(true);
+        music.play();
         initSprites();
     }
 
@@ -54,6 +69,9 @@ public class MenuScreen extends BaseScreen {
         bg.dispose();
         atlas.dispose();
         super.dispose();
+        lg.dispose();
+        music.dispose();
+        ns.dispose();
     }
 
     @Override
@@ -62,8 +80,12 @@ public class MenuScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.resize(worldBounds);
+        }
         buttonExit.resize(worldBounds);
         buttonPlay.resize(worldBounds);
+        logo.resize(worldBounds);
     }
 
     @Override
@@ -87,8 +109,13 @@ public class MenuScreen extends BaseScreen {
             for (int i = 0; i < STAR_COUNT; i++) {
                 stars[i] =  new Star(atlas);
             }
+            novaStars = new NovaStar[NOVA_COUNT];
+            for (int i = 0; i < NOVA_COUNT; i++){
+                novaStars[i] = new NovaStar(ns);
+            }
             buttonExit = new ButtonExit(atlas);
             buttonPlay = new ButtonPlay(atlas, game);
+            logo = new Logo(lg);
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
@@ -98,6 +125,12 @@ public class MenuScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.update(delta);
+        }
+        logo.update(delta);
+        buttonPlay.update(delta);
+        buttonExit.update(delta);
     }
 
     private void draw() {
@@ -108,8 +141,12 @@ public class MenuScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.draw(batch);
+        }
         buttonExit.draw(batch);
         buttonPlay.draw(batch);
+        logo.draw(batch);
         batch.end();
     }
 

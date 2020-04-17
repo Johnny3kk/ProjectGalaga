@@ -1,6 +1,7 @@
 package ru.geekbrains.base;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,6 +10,7 @@ import ru.geekbrains.math.Rect;
 import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.pool.ExplosionPool;
 import ru.geekbrains.sprites.Bullet;
+import ru.geekbrains.sprites.Exhaust;
 import ru.geekbrains.sprites.Explosion;
 
 public abstract class Ship extends Sprite {
@@ -27,6 +29,8 @@ public abstract class Ship extends Sprite {
     protected int damage;
     protected Sound shootSound;
     protected int hp;
+    protected Exhaust exhaust;
+    protected Texture texture;
 
     protected Vector2 v0;
     protected Vector2 v;
