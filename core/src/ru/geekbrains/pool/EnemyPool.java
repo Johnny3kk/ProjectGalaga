@@ -1,8 +1,12 @@
 package ru.geekbrains.pool;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import ru.geekbrains.base.SpritesPool;
+import ru.geekbrains.exception.GameException;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprites.Enemy;
+import ru.geekbrains.sprites.Exhaust;
 
 public class EnemyPool extends SpritesPool<Enemy> {
 
@@ -18,6 +22,7 @@ public class EnemyPool extends SpritesPool<Enemy> {
 
     @Override
     protected Enemy newObject() {
-        return new Enemy(bulletPool, explosionPool, worldBounds);
+            return new Enemy(bulletPool, explosionPool, worldBounds);
     }
+
 }

@@ -18,6 +18,7 @@ public class EnemyEmitter {
     private static final int ENEMY_SMALL_DAMAGE = 1;
     private static final float ENEMY_SMALL_RELOAD_INTERVAL = 3f;
     private static final int ENEMY_SMALL_HP = 1;
+    private static final float ENEMY_SMALL_EXHEIGHT = 0.02f;
 
     private static final float ENEMY_MEDIUM_HEIGHT = 0.15f;
     private static final float ENEMY_MEDIUM_BULLET_HEIGHT = 0.02f;
@@ -25,6 +26,7 @@ public class EnemyEmitter {
     private static final int ENEMY_MEDIUM_DAMAGE = 5;
     private static final float ENEMY_MEDIUM_RELOAD_INTERVAL = 4f;
     private static final int ENEMY_MEDIUM_HP = 5;
+    private static final float ENEMY_MEDIUM_EXHEIGHT = 0.04f;
 
     private static final float ENEMY_BIG_HEIGHT = 0.2f;
     private static final float ENEMY_BIG_BULLET_HEIGHT = 0.04f;
@@ -32,6 +34,7 @@ public class EnemyEmitter {
     private static final int ENEMY_BIG_DAMAGE = 10;
     private static final float ENEMY_BIG_RELOAD_INTERVAL = 1f;
     private static final int ENEMY_BIG_HP = 10;
+    private static final float ENEMY_BIG_EXHEIGHT = 0.06f;
 
     private Rect worldBounds;
     private Sound shootSound;
@@ -86,8 +89,10 @@ public class EnemyEmitter {
                         ENEMY_SMALL_RELOAD_INTERVAL,
                         shootSound,
                         ENEMY_SMALL_HP,
-                        ENEMY_SMALL_HEIGHT
+                        ENEMY_SMALL_HEIGHT,
+                        ENEMY_SMALL_EXHEIGHT
                 );
+
             } else if (type < 0.8f) {
                 enemy.set(
                         enemyMediumRegion,
@@ -99,7 +104,8 @@ public class EnemyEmitter {
                         ENEMY_MEDIUM_RELOAD_INTERVAL,
                         shootSound,
                         ENEMY_MEDIUM_HP,
-                        ENEMY_MEDIUM_HEIGHT
+                        ENEMY_MEDIUM_HEIGHT,
+                        ENEMY_MEDIUM_EXHEIGHT
                 );
             } else {
                 enemy.set(
@@ -112,7 +118,8 @@ public class EnemyEmitter {
                         ENEMY_BIG_RELOAD_INTERVAL,
                         shootSound,
                         ENEMY_BIG_HP,
-                        ENEMY_BIG_HEIGHT
+                        ENEMY_BIG_HEIGHT,
+                        ENEMY_BIG_EXHEIGHT
                 );
             }
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
@@ -123,4 +130,5 @@ public class EnemyEmitter {
     public int getLevel() {
         return level;
     }
+
 }

@@ -22,8 +22,10 @@ import ru.geekbrains.sprites.Background;
 import ru.geekbrains.sprites.Bullet;
 import ru.geekbrains.sprites.ButtonNewGame;
 import ru.geekbrains.sprites.Enemy;
+import ru.geekbrains.sprites.Exhaust;
 import ru.geekbrains.sprites.GameOver;
 import ru.geekbrains.sprites.MainShip;
+import ru.geekbrains.sprites.NovaStar;
 import ru.geekbrains.sprites.Star;
 import ru.geekbrains.utils.EnemyEmitter;
 
@@ -32,6 +34,7 @@ public class GameScreen extends BaseScreen {
     private enum State {PLAYING, PAUSE, GAME_OVER}
 
     private static final int STAR_COUNT = 64;
+    private static final int NOVA_COUNT = 9;
     private static final float FONT_MARGIN = 0.01f;
     private static final float FONT_SIZE = 0.02f;
     private static final String FRAGS = "Frags: ";
@@ -67,13 +70,18 @@ public class GameScreen extends BaseScreen {
 
     private int frags;
 
+    private Music musicForGO;
+    private NovaStar[] novaStars;
+    private Texture ns;
+    private Texture ex;
+
     @Override
     public void show() {
         super.show();
         bg = new Texture("textures/bg.png");
         atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
-        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/pow.wav"));
         explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
         bulletPool = new BulletPool();
         explosionPool = new ExplosionPool(atlas, explosion);
@@ -84,9 +92,14 @@ public class GameScreen extends BaseScreen {
         sbFrags = new StringBuilder();
         sbHP = new StringBuilder();
         sbLevel = new StringBuilder();
-        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/Game.mp3"));
         music.setLooping(true);
         music.play();
+        music.setVolume(70);
+        musicForGO = Gdx.audio.newMusic(Gdx.files.internal("sounds/GameOver.mp3"));
+        musicForGO.setLooping(true);
+        ns = new Texture("textures/novaStar.png");
+        ex = new Texture("textures/exhaust3.png");
         initSprites();
         state = State.PLAYING;
         prevState = State.PLAYING;
@@ -100,6 +113,9 @@ public class GameScreen extends BaseScreen {
         bulletPool.freeAllActiveObjects();
         enemyPool.freeAllActiveObjects();
         explosionPool.freeAllActiveObjects();
+        musicForGO.stop();
+        music.play();
+        music.setVolume(70);
     }
 
     @Override
@@ -131,6 +147,9 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.resize(worldBounds);
+        }
         mainShip.resize(worldBounds);
         gameOver.resize(worldBounds);
         buttonNewGame.resize(worldBounds);
@@ -143,11 +162,14 @@ public class GameScreen extends BaseScreen {
         bulletPool.dispose();
         enemyPool.dispose();
         music.dispose();
+        musicForGO.dispose();
         laserSound.dispose();
         bulletSound.dispose();
         explosion.dispose();
         font.dispose();
         super.dispose();
+        ns.dispose();
+        ex.dispose();
     }
 
 
@@ -193,7 +215,11 @@ public class GameScreen extends BaseScreen {
             for (int i = 0; i < STAR_COUNT; i++) {
                 stars[i] =  new Star(atlas);
             }
-            mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
+            novaStars = new NovaStar[NOVA_COUNT];
+            for (int i = 0; i < NOVA_COUNT; i++){
+                novaStars[i] = new NovaStar(ns);
+            }
+            mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound, new Exhaust(ex));
             gameOver = new GameOver(atlas);
             buttonNewGame = new ButtonNewGame(atlas, this);
         } catch (GameException e) {
@@ -205,6 +231,9 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.update(delta);
+        }
         explosionPool.updateActiveSprites(delta);
         if (state == State.PLAYING) {
             mainShip.update(delta);
@@ -213,6 +242,8 @@ public class GameScreen extends BaseScreen {
             enemyEmitter.generate(delta, frags);
         } else if (state == State.GAME_OVER) {
             buttonNewGame.update(delta);
+            music.stop();
+            musicForGO.play();
         }
 
     }
@@ -273,6 +304,9 @@ public class GameScreen extends BaseScreen {
         background.draw(batch);
         for (Star star : stars) {
             star.draw(batch);
+        }
+        for (NovaStar novaStar : novaStars) {
+            novaStar.draw(batch);
         }
         switch (state) {
             case PLAYING:
